@@ -13,7 +13,7 @@ class ImageUploadField extends FieldAbstract
         \Papalardo\Laform\Traits\Attributes\HasLabelAttribute, 
         \Papalardo\Laform\Traits\Attributes\HasNameAttribute;
 
-    public $default = [];
+    public $default;
 
     public function __construct(string $label, string $name = null)
     {
