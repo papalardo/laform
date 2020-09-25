@@ -1,0 +1,12 @@
+{
+    "name": "papalardo/laform",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Pablo Papalardo",
+            "email": "papalardo94@hotmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
