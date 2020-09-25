@@ -1,0 +1,20 @@
+// Fonts
+@import url('https://fonts.googleapis.com/css?family=Nunito');
+
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+.hover\:w-20:hover {
+    width: theme('spacing.20');
+}
+
+.hover\:object-contain:hover {
+    object-fit: contain;
+}
+
+.focus\:w-20:focus {
+    width: theme('spacing.20');
+}
