@@ -39,7 +39,7 @@ export default {
     `,
     created() {
         this.form.fields.forEach(field => {
-            this.$set(this.formData, field.name, field.value)
+            this.$set(this.formData, field.name, (field.value || field.default))
         })
     },
     methods: {

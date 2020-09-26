@@ -47,8 +47,14 @@ Vue.component('repeated-field', require('./components/fields/RepeatedField.vue')
 Vue.component('select-field', require('./components/fields/SelectField.vue').default);
 Vue.component('rich-select-field', require('./components/fields/RichSelectField.vue').default);
 Vue.component('date-time-picker-field', require('./components/fields/DateTimePickerField.vue').default);
-Vue.component('image-field', require('./components/fields/image-field/ImageField.vue').default);
-Vue.component('multi-image-field', require('./components/fields/multi-file-field/MultiFileField.vue').default);
+
+// Image field
+Vue.component('image-field', require('./components/fields/ImageField.vue').default);
+Vue.component('multi-image-field', require('./components/fields/MultiImageField.vue').default);
+
+// File field
+Vue.component('file-field', require('./components/fields/FileField.vue').default);
+Vue.component('multi-file-field', require('./components/fields/MultiFileField.vue').default);
 
 Vue.component('user-edit-form', require('./components/forms/UserEdit.vue').default);
 

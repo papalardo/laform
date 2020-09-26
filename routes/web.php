@@ -89,20 +89,13 @@ Route::get('/', function () {
                     ')
                 ])
         )
-        ->addField(\Papalardo\Laform\Fields\ImageField::make('Avatar'), [
-            'serverConfig' => [
-                'endpoint' => '/images-handler',
-                'csrfToken' => csrf_token(),
-                'dir' => 'teste'
-            ]
-        ])
-        ->addField(\Papalardo\Laform\Fields\MultiImageField::make('Gallery'), [
-            'serverConfig' => [
-                'endpoint' => '/images-handler',
-                'csrfToken' => csrf_token(),
-                'dir' => 'teste'
-            ]
-        ])
+        ->addField(
+            \Papalardo\Laform\Fields\FileField::make('CPF')
+                ->setUploadConfig(\Papalardo\Laform\Config\Upload\FileUploadConfig::make()
+                    ->setDirectory('documents')))
+        ->addField(\Papalardo\Laform\Fields\MultiFileField::make('Processos'))
+        ->addField(\Papalardo\Laform\Fields\ImageField::make('Avatar'))
+        ->addField(\Papalardo\Laform\Fields\MultiImageField::make('Gallery'))
         // ->addField(
         //     \Papalardo\Laform\Fields\RichSelectField::make('Estado')
         //         ->help('This is help')
