@@ -91,11 +91,11 @@ export default {
         schema: Object
     },
     mounted() {
-        this.localValue = this.value || this.default
+        this.localValue = this.value
 
-        if(!this.localValue.length) {
-            this.addRow()
-        }
+        // if(!this.localValue.length) {
+        //     this.addRow()
+        // }
     },
     data: () => ({
         localValue: [],
@@ -105,17 +105,14 @@ export default {
         onInput(arrayIndex, fieldName, newValue) {
             this.$set(this.localValue[arrayIndex], fieldName, newValue)
             this.$nextTick(() => 
-                this.$emit('input', this.localValue)
-            )
+                this.$emit('input', this.localValue))
         },
         addRow() {
             this.localValue.push(
-                this.fields.reduce((acc, field) => (acc[field.name] = field.value, acc), {})
-            )
+                this.fields.reduce((acc, field) => (acc[field.name] = field.value, acc), {}))
 
             this.$nextTick(() => 
-                this.$emit('input', this.localValue)
-            )
+                this.$emit('input', this.localValue))
         },
         removeRow(valueKey) {
             this.localValue.splice(valueKey, 1)

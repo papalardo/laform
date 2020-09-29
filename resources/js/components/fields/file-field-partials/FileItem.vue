@@ -5,20 +5,26 @@
         </slot>
         <div class="flex flex-auto ml-2 items-center">
             <div class="flex-auto">
-                <div class="flex flex-col">
-                    <a :href="file.url" target="_blank" class="truncate max-w-xs">
-                        {{ getFileName() }}
-                    </a>
+                <div class="flex flex-col truncate w-32 max-w-xs sm:w-auto">
+                    <slot
+                        name="name" 
+                        :getFileName="getFileName" 
+                        :file="file"
+                    >  
+                        <a :href="file.url" target="_blank" class="leading-4 truncate">
+                            {{ getFileName() }}
+                        </a>
+                    </slot>
+                    <slot :file="file" :formatBytes="formatBytes">
+                        <span class="leading-4 text-xs truncate" v-if="file.size">
+                            {{ formatBytes(file.size) }}
+                        </span>
+                    </slot>
                 </div>
-                <slot :file="file" formatBytes="formatBytes">
-                    <span class="truncate max-w-xs text-xs" v-if="file.size">
-                        {{ formatBytes(file.size) }}
-                    </span>
-                </slot>
             </div>
             <div class="ml-2">
                 <slot name="delete-icon">
-                    <button class="bg-red-600 rounded-full p-2" @click="$emit('remove-file')">
+                    <button class="bg-red-600 rounded-full p-2" @click.prevent="$emit('remove-file')">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-current text-white w-3 h-3"><path d="M3 6v18h18v-18h-18zm5 14c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm5 0c0 .552-.448 1-1 1s-1-.448-1-1v-10c0-.552.448-1 1-1s1 .448 1 1v10zm4-18v2h-20v-2h5.711c.9 0 1.631-1.099 1.631-2h5.315c0 .901.73 2 1.631 2h5.712z"/></svg>
                     </button>
                 </slot>
@@ -49,7 +55,10 @@ export default {
         },
         getFileName() {
             if(!this.file.name) {
-                console.log("this.file.url.split('/').pop() ==>", this.file.url.split('/').pop())
+                if(!this.file.url) {
+                    console.warn(`[${this.$options._componentTag}] - File URL not defined`)
+                    return '';
+                }
                 return this.file.url.split('/').pop()
             }
 

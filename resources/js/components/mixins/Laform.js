@@ -3,11 +3,11 @@ import filterPropsMixin from '../mixins/FilterProps'
 export default {
     mixins: [filterPropsMixin],
     props: {
-        form: Object
+        form: Object,
     },
     data: () => ({
         schema: {},
-        formData: {}
+        formData: Object.assign({})
     }),
     template: `
         <form @submit.prevent="onSubmit">
@@ -38,9 +38,13 @@ export default {
         </form>
     `,
     created() {
-        this.form.fields.forEach(field => {
-            this.$set(this.formData, field.name, field.value)
-        })
+        console.log('this.form.form_data ===>', this.form.form_data)
+        if(this.form.form_data) {
+            this.formData = this.form.form_data
+        }
+        // this.form.fields.forEach(field => {
+        //     this.$set(this.formData, field.name, field.value)
+        // })
     },
     methods: {
         onSubmit() {

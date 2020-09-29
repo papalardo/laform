@@ -17,7 +17,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'music', 'nested_fields'
     ];
 
     /**
@@ -37,4 +37,18 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function musics() {
+        return $this->hasMany(\App\Models\Music::class);
+    }
+
+    // public function formMusicsAttribute($values) {
+    //     return $values->pluck('id', 'name');
+    // }
+
+    public function formAvatarAttribute() {
+        return [
+            'url' => 'https://ui-avatars.com/api/?name=John+Doe'
+        ];
+    }
 }

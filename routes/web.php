@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\User;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -53,31 +55,75 @@ Route::get('/', function () {
     //             ->getFields()
     //     ]);
 
-    $form = (new \Papalardo\Laform\Forms\FormBuilder)
-        ->addField(\Papalardo\Laform\Fields\HiddenField::make('_token', csrf_token()))
-        ->addField(InputField::make('Teste nome')->value('TESTE'))
-        ->addField(InputField::make('Teste nome')->help('This is help 2'))
+    $faker = Faker\Factory::create();
+
+    $user = \Papalardo\Laform\Tests\Models\User::create([
+        'name' => $faker->name,
+        'email' => $faker->email,
+        'country' => $faker->randomElement(['us', 'cn', 'in'])
+    ]);
+    
+
+    $musics = collect([]);
+    foreach(range(1, 5) as $n) {
+        $musics->push(\Papalardo\Laform\Tests\Models\Music::create([ 'name' => $faker->name, 'album' => $faker->name ]));
+    }
+    
+
+    $user->playlist()->sync($musics->pluck('id'));
+
+    $user->avatar()->save(new \Papalardo\Laform\Tests\Models\Media(['link' => 'https://ui-avatars.com/api/?name=John+Doe', 'ref' => 'avatar']));
+
+    $user->photos()->saveMany([
+        new \Papalardo\Laform\Tests\Models\Media(['link' => 'https://ui-avatars.com/api/?name=John+Doe', 'ref' => 'photos']),
+        new \Papalardo\Laform\Tests\Models\Media(['link' => 'https://ui-avatars.com/api/?name=John+Doe', 'ref' => 'photos']),
+        new \Papalardo\Laform\Tests\Models\Media(['link' => 'https://ui-avatars.com/api/?name=John+Doe', 'ref' => 'photos']),
+    ]);
+
+    $user->carDocument()->save(new \Papalardo\Laform\Tests\Models\Media(['link' => 'https://ui-avatars.com/api/?name=John+Doe', 'ref' => 'car_document']));
+
+    $user->documents()->saveMany([
+        new \Papalardo\Laform\Tests\Models\Media(['link' => 'https://ui-avatars.com/api/?name=John+Doe', 'ref' => 'documents']),
+        new \Papalardo\Laform\Tests\Models\Media(['link' => 'https://ui-avatars.com/api/?name=John+Doe', 'ref' => 'documents']),
+        new \Papalardo\Laform\Tests\Models\Media(['link' => 'https://ui-avatars.com/api/?name=John+Doe', 'ref' => 'documents']),
+    ]);
+        
+    $user->nested_fields = [
+        [ 'name2' => 'name2', 'name3' => 'name3', 'playlist' => $user->playlist, 'deep_nested_fields' => [['name' => 'Pablo', 'phone' => '61']] ],
+        [ 'name2' => 'name2123', 'name3' => 'name365', 'playlist' => $user->playlist ],
+        [ 'name2' => 'name2123', 'name3' => 'name365654', 'playlist' => $user->playlist ],
+        [ 'name2' => 'name2445464', 'playlist' => $user->playlist ],
+    ];
+    
+    $form = \Papalardo\Laform\Forms\FormBuilder::init($user)
+        // ->addField(\Papalardo\Laform\Fields\HiddenField::make('_token', csrf_token()))
+        ->addField(InputField::make('nome', 'name'))
+        // ->addField(InputField::make('Email', 'email')->help('This is help 2'))
         ->addField(
-            SelectField::make('Teste nome')
-                ->help('This is help')
-                ->options([
-                    'us' => ['name' => 'United States', 'flag' => 'https://lipis.github.io/flag-icon-css/flags/4x3/um.svg' ],
-                    'cn' => ['name' => 'China', 'flag' => 'https://lipis.github.io/flag-icon-css/flags/4x3/cn.svg' ],
-                    'in' => ['name' => 'India', 'flag' => 'https://lipis.github.io/flag-icon-css/flags/4x3/in.svg' ]
-                ])
-                // ->valueAttribute('name')
-                ->textAttribute('name')
+            \Papalardo\Laform\Fields\RichMultiSelectField::make('Gostos musicais', 'playlist', \Papalardo\Laform\Tests\Models\Music::limit(2)->get())
+                ->trackBy('name', 'id')
+        )
+        ->addField(
+            SelectField::make('País', 'country', \App\Models\Music::all()->toArray())
+                ->trackByLabel('name')
                 // ->addSlot(new \Papalardo\Laform\FieldSlots\SelectField\SelectFieldOptionSlot('<option :value="option.name">Custom {{ option.name }}</option>'))
         )
         ->addField(
-            \Papalardo\Laform\Fields\RichSelectField::make('Teste nome')
-                ->help('This is help')
-                ->options([
-                    'us' => ['name' => 'United States', 'flag' => 'https://lipis.github.io/flag-icon-css/flags/4x3/um.svg' ],
-                    'cn' => ['name' => 'China', 'flag' => 'https://lipis.github.io/flag-icon-css/flags/4x3/cn.svg' ],
-                    'in' => ['name' => 'India', 'flag' => 'https://lipis.github.io/flag-icon-css/flags/4x3/in.svg' ]
+            SelectField::make('País', 'country', [
+                    ['code' => 'us', 'name' => 'United States', 'flag' => 'https://lipis.github.io/flag-icon-css/flags/4x3/um.svg'],
+                    ['code' => 'cn', 'name' => 'China', 'flag' => 'https://lipis.github.io/flag-icon-css/flags/4x3/cn.svg'],
+                    ['code' => 'in', 'name' => 'India', 'flag' => 'https://lipis.github.io/flag-icon-css/flags/4x3/in.svg']
                 ])
-                ->textAttribute('name')
+                ->trackBy('name', 'code')
+                // ->addSlot(new \Papalardo\Laform\FieldSlots\SelectField\SelectFieldOptionSlot('<option :value="option.name">Custom {{ option.name }}</option>'))
+        )
+        ->addField(
+            \Papalardo\Laform\Fields\RichSelectField::make('Country From', 'country')
+                ->options([
+                    ['code' => 'us', 'name' => 'United States', 'flag' => 'https://lipis.github.io/flag-icon-css/flags/4x3/um.svg' ],
+                    ['code' => 'cn', 'name' => 'China', 'flag' => 'https://lipis.github.io/flag-icon-css/flags/4x3/cn.svg' ],
+                    ['code' => 'in', 'name' => 'India', 'flag' => 'https://lipis.github.io/flag-icon-css/flags/4x3/in.svg' ]
+                ])
                 ->setSlots([
                     new \Papalardo\Laform\FieldSlots\SelectField\SelectFieldOptionSlot('
                         <span class="flex items-center"><img class="w-4 h-4 mr-2" :src="option.flag" />{{ option.name }}</span>
@@ -88,14 +134,16 @@ Route::get('/', function () {
                         </span>
                     ')
                 ])
+                ->trackByValue('code')
+                // ->trackBy('name', 'code')
         )
-        ->addField(\Papalardo\Laform\Fields\ImageUploadField::make('Avatar'), [
-            'serverConfig' => [
-                'endpoint' => '/images-handler',
-                'csrfToken' => csrf_token(),
-                'dir' => 'teste'
-            ]
-        ])
+        ->addField(
+            \Papalardo\Laform\Fields\FileField::make('Documento do carro', 'car_document')
+                ->setUploadConfig(\Papalardo\Laform\Config\Upload\FileUploadConfig::make()
+                    ->setDirectory('documents')))
+        ->addField(\Papalardo\Laform\Fields\MultiFileField::make('Documentos', 'documents'))
+        ->addField(\Papalardo\Laform\Fields\ImageField::make('Avatar'))
+        ->addField(\Papalardo\Laform\Fields\MultiImageField::make('Photos'))
         // ->addField(
         //     \Papalardo\Laform\Fields\RichSelectField::make('Estado')
         //         ->help('This is help')
@@ -113,11 +161,25 @@ Route::get('/', function () {
                 'Nested Field',
                 'nested_fields',
                 FieldsBuilder::make([
-                    InputField::make('Teste nome 2'),
-                    InputField::make('Teste nome 3'),
+                    InputField::make('Teste nome 2', 'name2'),
+                    InputField::make('Teste nome 3', 'name3'),
+                    \Papalardo\Laform\Fields\RichMultiSelectField::make('Gostos musicais', 'playlist', \Papalardo\Laform\Tests\Models\Music::limit(2)->get())
+                        ->trackBy('name', 'id'),
+                    RepeatedField::make(
+                        'Nested Field',
+                        'deep_nested_fields',
+                        FieldsBuilder::make([
+                            InputField::make('Teste nome 2', 'name')
+                                ->valueResolve(function($value) {
+                                    return $value . ' <= Local Deep Value Resolved';
+                                }),
+                            InputField::make('Teste nome 3', 'phone'),
+                        ]),
+                    )
                 ]),
             )
         )
+        ->getForm();
         ;
     // ->add('dateeee', \Papalardo\Laform\Fields\DateTimePickerField::class, [
     //     'placeholder' => 'Selecione uma data',
@@ -134,6 +196,20 @@ Route::get('/', function () {
     //     'label' => 'Nested Field',
     //     'fields' => $contactForm->getFields()
     // ]);
+    
+    // $user = \App\Models\User::updateOrCreate(['email' => 'pablopapalardo2@gmail.com'], [
+    //     'name' => 'Pablo Papalardo',
+    //     'password' => '@admin123',
+    // ]);
+
+    // $user->musics()->saveMany([
+    //     new \App\Models\Music(['name' => 'Samba']),
+    //     new \App\Models\Music(['name' => 'Rap']),
+    //     new \App\Models\Music(['name' => 'Hip Hop'])
+    // ]);
+
+    // $form->fill($user);
+    // return response()->json($form);
 
     return view('forms.user-edit', ['form' => $form]);
 });

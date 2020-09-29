@@ -2,6 +2,7 @@
 
 namespace Papalardo\Laform\Traits\Attributes;
 
+use InvalidArgumentException;
 use Papalardo\Laform\FieldSlots\AbstractSlot;
 
 trait HasSlotsAttribute
@@ -37,5 +38,23 @@ trait HasSlotsAttribute
         $this->slots = [];
 
         return $this->addSlots($slots);
+    }
+
+    /**
+     * @param string|\Papalardo\Laform\FieldSlots\AbstractSlot $slot 
+     */
+    public function removeSlot($slot)
+    {
+        if($slot instanceof \Papalardo\Laform\FieldSlots\AbstractSlot) {
+            $slot = $slot->getName();
+        }
+
+        if(is_string($slot)) {
+            unset($this->slots[$slot]);
+        } else {
+            throw new InvalidArgumentException("Slot must be string or \Papalardo\Laform\FieldSlots\AbstractSlot instance");
+        }
+        
+        return $this;
     }
 }

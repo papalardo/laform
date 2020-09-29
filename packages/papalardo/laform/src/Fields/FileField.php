@@ -4,14 +4,16 @@ namespace Papalardo\Laform\Fields;
 
 use Illuminate\Support\Str;
 
-class ImageUploadField extends FieldAbstract
+class FileField extends FieldAbstract
 {
     use \Papalardo\Laform\Traits\Attributes\HasValueAttribute, 
         \Papalardo\Laform\Traits\Attributes\HasHelpAttribute, 
         \Papalardo\Laform\Traits\Attributes\HasPlaceholderAttribute, 
         \Papalardo\Laform\Traits\Attributes\HasWidthSpanAttribute, 
         \Papalardo\Laform\Traits\Attributes\HasLabelAttribute, 
-        \Papalardo\Laform\Traits\Attributes\HasNameAttribute;
+        \Papalardo\Laform\Traits\Attributes\HasNameAttribute,
+        \Papalardo\Laform\Traits\Attributes\HasFlatNameAttribute,
+        \Papalardo\Laform\Traits\Attributes\HasUploadConfigAttribute;
 
     public $default;
 
@@ -21,6 +23,7 @@ class ImageUploadField extends FieldAbstract
 
         $this->label = $label;
         $this->name = $name ?? Str::snake($label);
+        $this->flatName($this->name);
     }
 
     public static function make(string $label, string $name = null)
