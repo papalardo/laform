@@ -57,8 +57,8 @@ class FormDataResolver
         }
     }
 
-    public function getValueByField($field, $deepName = null) {
-        $value = Arr::get($this->model->toArray(), $deepName ?? $field->flatName);
+    public function getValueByField($field, $fieldname) {
+        $value = Arr::get($this->model->toArray(), $fieldname);
 
         if(method_exists($field, 'resolveValue')) {
             $value = $field->resolveValue($value);
@@ -68,7 +68,7 @@ class FormDataResolver
             return $fn($value);
         }
 
-        $formMethod = Str::camel('form_'.$field->flatName.'_attribute');
+        $formMethod = Str::camel('form_'.str_replace('.', '_', $field->flatName).'_attribute');
 
         if(method_exists($this->model, $formMethod)) {
             return $this->model->$formMethod($value);
@@ -88,6 +88,31 @@ class FormDataResolver
             $acumulatorFields[] = $field;
         }
         return $acumulatorFields;
+    }
+
+    public function resolveValueByField($field, $model)
+    {
+        if(method_exists($field, 'user_value_resolve')) {
+
+        }
+
+        $fieldName = Str::snake($field->name);
+        
+        $formMethod = Str::camel('form_'.$fieldName.'_attribute');
+
+        if(method_exists($model, $formMethod)) {
+            return $model->$formMethod($model->{$fieldName});
+        }
+        
+        if(method_exists($field, 'resolveValue')) {
+            return $field->resolveValue($model->{$fieldName});
+        }
+
+        if($value = Arr::get($this->form_data, $fieldName)) {
+            return $value;
+        }
+
+        return $model->{$field->name};
     }
 
     protected function isRelationship($attribute, $model)
