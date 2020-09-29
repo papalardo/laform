@@ -12,6 +12,8 @@ class InputField extends FieldAbstract
         \Papalardo\Laform\Traits\Attributes\HasPlaceholderAttribute, 
         \Papalardo\Laform\Traits\Attributes\HasWidthSpanAttribute, 
         \Papalardo\Laform\Traits\Attributes\HasLabelAttribute, 
+        \Papalardo\Laform\Traits\Attributes\HasFlatNameAttribute, 
+        \Papalardo\Laform\Traits\Attributes\HasValueResolveAttribute, 
         \Papalardo\Laform\Traits\Attributes\HasNameAttribute;
 
     public $default = '';
@@ -26,6 +28,7 @@ class InputField extends FieldAbstract
 
         $this->label = $label;
         $this->name = $name ?? Str::snake($label);
+        $this->flatName($this->name);
     }
 
     public static function make(string $label, string $name = null)
@@ -45,5 +48,9 @@ class InputField extends FieldAbstract
     {
         $this->prependAddon = $prependAddon;
         return $this;
+    }
+
+    public function resolveValue($value) {
+        return 'Value Resolved => '. $value;
     }
 }

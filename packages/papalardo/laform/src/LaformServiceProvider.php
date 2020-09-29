@@ -17,6 +17,10 @@ class LaformServiceProvider extends ServiceProvider
         $this->loadViewsFrom(__DIR__.'/views', 'laform');
 
         $this->loadRoutesFrom(__DIR__.'/routes.php');
+
+        if (TRUE || env('APP_ENV') == 'testing') {
+            $this->loadMigrationsFrom(__DIR__.'/Tests/database/migrations');
+        }
     }
 
     /**
